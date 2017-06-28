@@ -1,0 +1,263 @@
+textfield4   한글이름
+textfield22   영문이름
+textfield34   한문이름
+
+textfield323 - textfield3222   주민번호
+
+
+textfield33   파일명
+btSearchFile   파일검색버튼
+
+textfield332  년
+textfield3322  월
+textfield33222  일
+
+radiobutton 
+
+양력  solarCalendar
+음력  lunarCalendar
+
+
+남자  man
+여자  woman
+미혼  single
+기혼  married
+
+
+년차   textfield3323
+
+급여지급유형   select
+
+
+희망직무   select2
+
+급여지급유형   select3   // 중복항목
+
+입사유형   select4
+
+주소  textfield3324       textfield333
+
+
+전화번호   textfield33242     textfield332422       textfield332423
+
+
+이메일   textfield332424
+
+
+기술등급  textfield3324242
+
+
+주량    textfield33242422
+
+
+
+
+CREATE TABLE IS_MATER (
+       NO                   VARCHAR2(4) NOT NULL,
+       KOR_NAME             VARCHAR2(20) NULL,한글이름
+       JUMIN_NO             VARCHAR2(14) NULL,주민번호
+       ENG_NAME             VARCHAR2(20) NULL,영문이름
+       SEX                  VARCHAR2(1) NULL,성별
+       LAST_SCHOOL          VARCHAR2(15) NULL,    *** 한문이름
+       MAJOR                VARCHAR2(15) NULL,     ***생년월일
+       GRADU_DATE           VARCHAR2(10) NULL,     ***결혼유무
+       COM_LAG              VARCHAR2(4) NULL,
+       LICENCE1             VARCHAR2(20) NULL,   ***지금유형
+       LICENCE2             VARCHAR2(20) NULL,   ***입사유형
+       LICENCE3             VARCHAR2(20) NULL,    ***주량
+       TECH_LEV             VARCHAR2(10) NULL,기술등급
+       ADDRESS              VARCHAR2(20) NULL,주소
+       WORK_DATE            VARCHAR2(10) NULL,년차
+       STATE                VARCHAR2(1) NULL,
+       IMAGE                VARCHAR2(50) NULL,사진파일명
+       WORK_FLAG            VARCHAR2(1) NULL,희망직무
+       PHONE                VARCHAR2(15) NULL,연락처
+       EMAIL                VARCHAR2(50) NULL 이메일
+) TABLESPACE PIA21
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          64K
+            MINEXTENTS       1
+            MAXEXTENTS       2147483645
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCACHE
+NOPARALLEL;
+
+ALTER TABLE is_mater modify WORK_FLAG  VARCHAR2(2);
+
+
+ALTER TABLE is_mater
+RENAME COLUMN LAST_SCHOOL TO CHN_NAME;
+
+ALTER TABLE is_mater
+RENAME COLUMN MAJOR  TO marital_status;
+
+ALTER TABLE is_mater
+RENAME COLUMN GRADU_DATE  TO BIR;
+
+
+
+       LAST_SCHOOL          VARCHAR2(15) NULL,    *** 한문이름
+       MAJOR                VARCHAR2(15) NULL,     ***생년월일
+       GRADU_DATE           VARCHAR2(10) NULL,     ***결혼유무
+
+
+       LICENCE1             VARCHAR2(20) NULL,   ***지금유형
+       LICENCE2             VARCHAR2(20) NULL,   ***입사유형
+       LICENCE3             VARCHAR2(20) NULL,    ***주량
+
+
+
+create sequence ismater_seq start with 1   
+
+ismater_seq.NEXTVAL
+
+
+
+
+
+
+resources\upload
+
+
+
+,
+			
+
+
+
+$korName
+$engName
+$lastSchool
+$juminNo1
+$juminNo2
+$textfield332
+$textfield3322
+$textfield33222
+
+//모든라디오버튼
+radiobutton
+
+
+$workDate
+$licence1
+$workFlag
+$licence2
+
+$address1
+$address2
+
+$phone1
+$phone2
+$phone3
+
+$email
+$techLev
+$licence3
+
+
+
+korName : $korName.val(),
+engName:$engName.val(),
+				lastSchool:$lastSchool.val(),
+				juminNo1:$juminNo1.val(),
+				juminNo2:$juminNo2.val(),
+				textfield332:$textfield332.val(),
+				textfield3322:$textfield3322.val(),
+				textfield33222	:$textfield33222.val(),
+
+				//모든라디오버튼
+				radiobutton	:radiobutton.val(),
+	
+				workDate:$workDate.val(),
+				licence1	:$licence1.val(),
+				workFlag:$workFlag.val(),
+				licence2	:$licence2.val(),
+	
+				address1	:$address1.val(),
+				address2:$address2.val(),
+	
+				phone1	:$phone1.val(),
+				phone2:$phone2.val(),
+				phone3:$phone3.val(),
+	
+				email	:$email.val(),
+				techLev:$techLev.val(),
+				licence3	:$licence3.val()
+
+
+
+   String engName,
+			   String chnName,
+			   String juminNo1,
+			   String juminNo2,
+			   String year,
+			   String month,
+			   String day,
+			   String radiobutton,
+			   String workDate,
+			   String salarytype,
+			   String workFlag,
+			   String jointype,
+			   String address1,
+			   String address2,
+			   String phone1,
+			   String phone2,
+			   String phone3,
+			   String email,
+			   String techLev,
+			   String drinkingCapacity
+
+
+INSERT INTO 
+(
+NO,
+KOR_NAME,
+JUMIN_NO,
+ENG_NAME,
+SEX,
+LAST_SCHOO,
+MAJOR,
+GRADU_DATE,
+COM_LAG,
+LICENCE1,
+LICENCE2,
+LICENCE3,
+TECH_LEV,
+ADDRESS,
+WORK_DATE,
+STATE,
+IMAGE,
+WORK_FLAG,
+PHONE,
+EMAIL)
+
+VALUES(
+	ismater_seq.NEXTVAL,
+	#{korName},
+	#{juminNo},
+	#{engName},
+	#{sex},
+	#{lastSchool},
+	#{major},
+	#{graduDate},
+	#{comLag},
+	#{licence1},
+	#{licence2},
+	#{licence3},
+	#{techLev},
+	#{address},
+	#{workDate},
+	#{state},
+	#{image},
+	#{workFlag},
+	#{phone},
+	#{email}
+)
+

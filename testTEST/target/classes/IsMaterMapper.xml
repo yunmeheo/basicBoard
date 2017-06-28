@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="IsMaterMapper">
+
+<insert id="insert">
+INSERT INTO ISMATER VALUES(
+	ismater_seq.NEXTVAL,
+	#{kor_name},
+    #{eng_name},
+    #{chn_name},
+    #{jumin_no},
+    #{image_name},
+    #{bir},
+    #{sex},
+    #{marital_status},
+    #{work_date},
+    #{pay_type},
+    #{work_flag},
+    #{join_type},
+    #{address},
+    #{phone},
+	#{email},
+	#{tech_lev},
+	#{drink_Capacity}
+)
+
+</insert>
+
+
+<select id="selectAll"  resultType="IsMater" parameterType="java.util.Map">
+
+select r.* from (SELECT rownum rnum,  im.* FROM ( SELECT no, sex,kor_name, jumin_no,work_date,work_flag,tech_lev FROM ISMATER 
+
+<choose>
+<when test="searchItem.equals('name')">
+where kor_name like '%${searchValue}%'	
+</when>
+
+<when test="searchItem.equals('sex')">
+where sex = #{searchValue}
+</when>
+
+<when test="searchItem.equals('teclev')">
+where tech_lev = #{searchValue}
+</when>
+
+<otherwise>
+
+</otherwise>
+</choose>
+
+
+order by no desc) im) r
+where r.rnum BETWEEN #{startPage} AND #{endPage}
+
+</select>
+
+
+
+
+<select id="selectAllList"  resultType="IsMater"  parameterType="java.util.Map">
+select * from ISMATER
+
+<choose>
+<when test="searchItem.equals('name')">
+where kor_name like '%${searchValue}%'	
+</when>
+
+<when test="searchItem.equals('sex')">
+where sex = #{searchValue}
+</when>
+
+<when test="searchItem.equals('teclev')">
+where tech_lev = #{searchValue}
+</when>
+
+<otherwise>
+
+</otherwise>
+</choose>
+
+
+</select>
+
+
+<delete id="delete" parameterType="String">
+
+delete from ismater where no = #{checkedId}
+
+</delete>
+
+<select id="selectByNo" parameterType="String"  resultType="IsMater">
+select * from ismater where no = #{checkedId}
+</select>
+
+
+<update id="modify" parameterType="IsMater">
+update IsMater set 
+
+  image_name = #{image_name},
+  bir = #{bir},
+  sex=  #{sex},
+  marital_status = #{marital_status},
+  work_date= #{work_date},
+  pay_type = #{pay_type},
+  work_flag= #{work_flag},
+  join_type=#{join_type},
+  address= #{address},
+  phone = #{phone},
+  email=#{email},
+  tech_lev=#{tech_lev},
+  drink_Capacity = #{drink_Capacity}
+	
+ where no = #{no}
+</update> 
+
+<!-- select rownum, a.*
+from is_mater a
+where rownum between #{startPage} and #{endPage} -->
+
+
+
+
+<!-- select * from (SELECT * FROM ( SELECT rownum rnum,kor_name,jumin_no,work_date,work_flag,tech_lev FROM ISMATER)
+where rnum <= #{endPage} ) where rnum >= #{startPage}
+order by rnum -->
+
+
+</mapper>
