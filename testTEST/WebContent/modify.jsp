@@ -16,10 +16,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
 
-
 <%IsMater im = (IsMater)session.getAttribute("im");%>
-
-
 
 $(function(){
 
@@ -109,6 +106,9 @@ $(function(){
 	});
 	
 	
+	
+	
+	
 	//등록버튼 	
 	$('#modify').click(function(){
 		console.log("등록클릭");
@@ -165,16 +165,12 @@ $(function(){
 				      			   $("article").html(responseData.trim()); 
 				      		   }
 				      	   }); return false;
-						
-						
-						
 					}else{
 						alert("입력실패, 다시 시도해주세요.");
 					}
-					
-			}
-		});
-	});
+      			}
+      		});
+      	});
 	
 	
 	//전체데이터 입력보내긱
@@ -241,8 +237,14 @@ $(function(){
                                <!--사진출력 테이블 -->
 	                              <table width="100" border="0" cellspacing="1" cellpadding="0" id="uploadedImg">
 	                                  <tr>
-	                                    <td height="110" bgcolor="#FFFFFF">&nbsp;</td>
-	                                  </tr>
+	                                    <td height="110" bgcolor="#FFFFFF">&nbsp;
+                                      <div>
+                                         <a href='displayFile.do?fileName=${ismater.image_name}'>
+                                         <img src='displayFile.do?fileName=${ismater.image_name}'>
+                                         </a>
+                                      </div>
+                                     </td>
+	                                </tr>
 	                              </table>
 	                              
                               </td>
@@ -309,6 +311,7 @@ $(function(){
                           <tr> 
                             <td width="102" align="right"><strong>사진파일명 :&nbsp;</strong></td>
                             <td width="268">
+                            
                             
                             <input name="textfield33" type="text" size="40">
                             
@@ -499,15 +502,10 @@ $(function(){
 
 <div class = "fileUpLoad" style="border: 1px">
 
-<form id="fileForm"  method="post"
-        enctype="multipart/form-data">
-        <input type="file" id="fileUp" name="fileUp"/><br/><br/>
-        <!-- <input type="file" id="fileUp2" name="fileUp2"/><br/><br/>
-        아이디 : <input type="text" name="id" />
-        비밀번호 : <input type="password" name="pw" /><br/><br/> -->
-        <input type="submit" value="전송하기" >
-        <!-- <input type="button" value="전송하기" onClick="fileSubmit();"> -->
-    </form>
+<form id="fileForm"  method="post"  enctype="multipart/form-data">
+    <input type="file" id="fileUp" name="fileUp"/><br/><br/>
+    <input type="submit" value="전송하기" >
+</form>
 
 
 </div>

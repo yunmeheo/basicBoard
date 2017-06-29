@@ -259,8 +259,7 @@ $(function(){
 				
 				
 				<tr> 
-                      <td width="35" height="20" align="center"><input type="checkbox" name="checkbox" value="checkbox"></td>
-                      <td width="153" align="center">no</td>
+                      <td width="35" height="20" align="center"></td>
                       <td width="85" align="center">한국이름</td>
                       <td width="153" align="center">주민번호</td>
                       <td width="91" align="center">성별</td>
@@ -279,7 +278,6 @@ $(function(){
 				
 					<tr> 
                       <td width="35" height="20" align="center"><input type="checkbox" name="checkbox" value="${ismater.no}"></td>
-                     	<td width="153" align="center">${ismater.no}</td>
                       <td width="85" align="center">${ismater.kor_name}</td>
                       <td width="153"align="center">${ismater.jumin_no}</td>
                       
@@ -313,7 +311,7 @@ $(function(){
 						int total_record=objTotal_record;
 						/* 전체리스트 길이 구해오기 끝 */
 						
-						int page_per_record_cnt = 10; 
+						int page_per_record_cnt = 5; 
 						int group_per_page_cnt =5;     
 						int record_end_no = pageno*page_per_record_cnt;				
 						int record_start_no = record_end_no-(page_per_record_cnt-1);
