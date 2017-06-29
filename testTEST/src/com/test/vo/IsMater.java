@@ -43,11 +43,12 @@ public class IsMater {
 */
 	
 	//수정시
-	public IsMater(String no,String image_name,
+	public IsMater(String no,String jumin_no,String image_name,
 			String bir, String sex, String marital_status, String work_date, String pay_type, String work_flag,
 			String join_type, String address, String phone, String email, String tech_lev, String drink_Capacity) {
 		super();
 		this.no = no;
+		this.jumin_no = jumin_no;
 		this.image_name = image_name;
 		this.bir = bir;
 		this.sex = sex;

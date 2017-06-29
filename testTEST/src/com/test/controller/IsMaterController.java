@@ -58,6 +58,7 @@ public class IsMaterController {
 		System.out.println("IsMaterController , ajaxUpload");
 		return "insert.jsp";
 	}
+	
 	//파일 클릭시 업로드 2  
 	@RequestMapping(value = "/fileUpload.do")
 	public String fileUp(MultipartHttpServletRequest multi,Model model,HttpSession session) throws Exception {
@@ -65,7 +66,6 @@ public class IsMaterController {
 		System.out.println("IsMaterController , fileUp");
 		session.removeAttribute("newFileName");  //setAttribute("newFileName",newFileName);
 		session.removeAttribute("realPath");  //session.setAttribute("realPath",realPath);
-
 
 		System.out.println("file up 들어옴");
 		// String root = multi.getSession().getServletContext().getRealPath("/");
@@ -83,19 +83,20 @@ public class IsMaterController {
 
 		//파일이름 가져오기
 		Iterator<String> files = multi.getFileNames();
+		String fileName ="";
 		while(files.hasNext()){
 
 			String uploadFile = files.next();
 			MultipartFile mFile = multi.getFile(uploadFile);
-			String fileName = mFile.getOriginalFilename();
+			fileName = mFile.getOriginalFilename();
 
 			System.out.println("실제 파일 이름 : " +fileName);
-
 			//newFileName = System.currentTimeMillis()+"."+fileName.substring(fileName.lastIndexOf(".")+1);
 			//System.out.println("저장되는 파일 이름 : " +newFileName);
 
+			//중복되지 않도록 이름 변경하기
 			newFileName = uploadFile(fileName,fileName.getBytes());
-			System.out.println(newFileName);
+			System.out.println("newFileName :"+newFileName);
 
 			try {
 				mFile.transferTo(new File(path+newFileName));
@@ -108,9 +109,10 @@ public class IsMaterController {
 		System.out.println("newFileName : "+newFileName);
 		System.out.println("realPath : "+realPath);
 
+		//저장한 파일이름을 저장한다.
 		session.setAttribute("newFileName",newFileName);
-		session.setAttribute("realPath",realPath);
-
+		//session.setAttribute("realPath",realPath);
+		
 		return "ajaxUpload.do";
 	}
 
@@ -166,6 +168,8 @@ public class IsMaterController {
 	@RequestMapping(value="uploadAjax.do", method=RequestMethod.POST, produces="text/plain;charset=utf-8")
 	public ResponseEntity<String> uploadAjax(MultipartFile file) throws Exception {
 		System.out.println("IsMaterController , uploadAjax POST");
+		
+		System.out.println("MultipartFile file"+file);
 		return new ResponseEntity<String>(uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes()), HttpStatus.OK);
 	}
 
@@ -202,21 +206,28 @@ public class IsMaterController {
 		session.removeAttribute("newFileName");  //setAttribute("newFileName",newFileName);
 		session.removeAttribute("realPath");  //session.setAttribute("realPath",realPath);
 
-		String jumin_no= jumin_no1+"-"+jumin_no2;
-		String bir = year+"/"+month+"/"+day+"("+bir_type+")";
-		String address = address1 +address2;
-		String phone = phone1+"-"+phone2+"-"+phone3;
-		String msg="-1";
-
-
-		System.out.println("bir : "+bir);
-
+		
 		//결혼여부 db값으로 교체
+		if("solarCalendar".equals(bir_type)){
+			bir_type = "양력";
+		}else{
+			bir_type = "음력";
+		}
+		
+		//양력음력 변경
 		if("married".equals(marital_status)){
 			marital_status = "y";
 		}else{
 			marital_status = "n";
 		}
+		
+		String jumin_no= jumin_no1+"-"+jumin_no2;
+		String bir = year+"/"+month+"/"+day+"/"+bir_type;
+		String address = address1 +"/"+address2;
+		String phone = phone1+"-"+phone2+"-"+phone3;
+		String msg="-1";
+
+		System.out.println("bir : "+bir);
 
 		System.out.println("pay_type :"+pay_type);
 
@@ -240,11 +251,16 @@ public class IsMaterController {
 	@RequestMapping("selectAll.do")
 	public String selectAll(Model model, 
 			int pageno,
-			@RequestParam(required=false, defaultValue="") String searchItem,
-			@RequestParam(required=false, defaultValue="") String searchValue
-
+			@RequestParam(required=false, defaultValue="all") String searchItem,
+			@RequestParam(required=false, defaultValue="") String searchValue,
+			HttpSession session,
+			String pageClick
 			){
-
+		
+		
+		//검색값
+		System.out.println("searchItem : "+searchItem+", searchValue : "+searchValue);
+		
 		//리스트 10개씩 불러오기
 		List <IsMater> list = new ArrayList<>();
 		int startPage = pageno*5-4;
@@ -262,12 +278,63 @@ public class IsMaterController {
 		}
 
 		//검색결과 리스트
-		if("".equals(searchValue)){
+		/*if("".equals(searchValue)){
 			list = dao.selectAll(startPage,endPage,"",searchValue);
 		}else{
 			list = dao.selectAll(startPage,endPage,searchItem,searchValue);	
+		}*/
+		
+		//전체검색 했을 경우엔
+		
+		if(pageClick == null){
+			
+			session.removeAttribute("searchItem");//(, searchItem);
+			session.removeAttribute("searchValue");//, searchValue);
+			
+			
 		}
-
+		
+		
+		
+		if("".equals(searchValue)){
+			System.out.println("(String)session.getAttribute(searchValue) :"+(String)session.getAttribute("searchValue") );
+			if((String)session.getAttribute("searchValue") !=null){
+				System.out.println("if의 세션 유");
+				System.out.println("searchItem : "+(String)session.getAttribute("searchItem")+(String)session.getAttribute("searchValue"));
+				list = dao.selectAll(startPage,endPage,(String)session.getAttribute("searchItem"),(String)session.getAttribute("searchValue"));	
+				
+			}else{
+				System.out.println("if의 세션 무");
+				list = dao.selectAll(startPage,endPage,"",searchValue);
+			}
+			
+		}else if(!"".equals(searchValue)){
+			
+			System.out.println("if else 들어옴");
+			
+			session.setAttribute("searchItem", searchItem);
+			session.setAttribute("searchValue", searchValue);
+			
+			/*searchItem = (String)session.getAttribute(searchItem);
+			searchValue = (String)session.getAttribute(searchValue);*/
+			
+			list = dao.selectAll(startPage,endPage,searchItem,searchValue);	
+			
+		}
+		
+		
+		
+		
+		/*//처음에 들어올때의 리스트
+		if("".equals(searchValue)){
+			list = dao.selectAll(startPage,endPage,"",searchValue);
+		}else if(){
+			
+			list = dao.selectAll(startPage,endPage,searchItem,searchValue);	
+		}*/
+		
+		
+		
 		System.out.println("listSize : "+listSize);
 		model.addAttribute("list",list);
 		model.addAttribute("listSize",listSize);
@@ -300,9 +367,33 @@ public class IsMaterController {
 		im = dao.selectByNo(checkedId);
 
 		System.out.println(im);
+		
+		String bir = im.getBir();
+		String[] birArr = bir.split("/");
+		
+		String phone = im.getPhone();
+		String[] phoneArr = phone.split("-");
+		
+		/*String address = im.getPhone();
+		String[] addressArr = address.split("-");*/
+		
+		String jumin_no = im.getJumin_no();
+		String[] jumin_noArr = jumin_no.split("-");
+		
+		String address = im.getAddress();
+		String[] addressArr = address.split("/");
+		
 
 		model.addAttribute("im",im);
+		model.addAttribute("birArr",birArr);
+		model.addAttribute("phoneArr",phoneArr);
+		model.addAttribute("jumin_noArr",jumin_noArr);
+		model.addAttribute("addressArr",addressArr);
+		
 		session.setAttribute("im",im);
+		
+		
+		
 		return "modify.jsp";
 	}
 
@@ -311,10 +402,13 @@ public class IsMaterController {
 	@RequestMapping("/modify.do")
 	public String modify(Model model,
 			String no,
+			String jumin_no1,
+			String jumin_no2,
 			String image_name,
 			String year,
 			String month,
 			String day,
+			String bir_type,
 			String sex,
 			String marital_status,
 			String work_date,
@@ -330,21 +424,37 @@ public class IsMaterController {
 			String tech_lev,
 			String drink_capacity,
 			HttpSession session){
-
 		
+		
+		//결혼여부 db값으로 교체
+		if("solarCalendar".equals(bir_type)){
+			bir_type = "양력";
+		}else{
+			bir_type = "음력";
+		}
+		
+		//양력음력 변경
+		if("married".equals(marital_status)){
+			marital_status = "y";
+		}else{
+			marital_status = "n";
+		}
+
+		System.out.println("modify   marital_status : "+marital_status+", sex : "+sex);
 		session.removeAttribute("newFileName");  //setAttribute("newFileName",newFileName);
 		session.removeAttribute("realPath");  //session.setAttribute("realPath",realPath);
 		
 		System.out.println("no :"+no);
 
-		String bir = year+"/"+month+"/"+day;
+		String jumin_no= jumin_no1+"-"+jumin_no2;
+		String bir = year+"/"+month+"/"+day+"/"+bir_type;
 		String address = address1 +address2;
 		String phone = phone1+"-"+phone2+"-"+phone3;
 		String msg="-1";
 		System.out.println("pay_type :"+pay_type);
 
-		IsMater im = new IsMater(no,image_name,
-				bir, "w", "y", work_date, pay_type, work_flag,
+		IsMater im = new IsMater(no,jumin_no, image_name,
+				bir, sex, marital_status, work_date, pay_type, work_flag,
 				join_type, address, phone, email, tech_lev, drink_capacity);
 
 		System.out.println(im);
@@ -359,11 +469,11 @@ public class IsMaterController {
 
 	// 이미지 표시 매핑
 	@ResponseBody // view가 아닌 data리턴
-	@RequestMapping("displayFile.do")
-	public ResponseEntity<byte[]> displayFile(String fileName) throws Exception {
+	@RequestMapping("/displayFile.do")
+	public ResponseEntity<byte[]> displayFile(String fileName, HttpSession session) throws Exception {
 		System.out.println("IsMaterController , displayFile");
 		// 서버의 파일을 다운로드하기 위한 스트림
-		System.out.println("fileName"+fileName );
+		System.out.println("fileName : "+fileName );
 		InputStream in = null; //java.io
 		ResponseEntity<byte[]> entity = null;
 		try {
@@ -398,6 +508,11 @@ public class IsMaterController {
 		} finally {
 			in.close(); //스트림 닫기
 		}
+		System.out.println("entity : "+entity);
+		
+		//업로드 후 세션을 지워준다.
+		session.removeAttribute("newFileName");
+		//session.setAttribute("newFileName", fileName);
 		return entity;
 	}
 
@@ -476,10 +591,11 @@ public class IsMaterController {
 		}
 		// 디렉토리가 존재하지 않으면
 		for (String path : paths) {
-			System.out.println("저장소없어서 만들었어요.");
+			
 			File dirPath = new File(uploadPath + path);
 			// 디렉토리가 존재하지 않으면
 			if (!dirPath.exists()) {
+				System.out.println("저장소없어서 만들었어요.");
 				dirPath.mkdir(); //디렉토리 생성
 			}
 		}
@@ -488,6 +604,10 @@ public class IsMaterController {
 	// 썸네일 생성
 	private static String makeThumbnail(String uploadPath, String path, String fileName) throws Exception {
 		System.out.println("IsMaterController , makeThumbnail");
+		
+		System.out.println("uploadPath:"+uploadPath+", path:"+path+", fileName:"+fileName);
+		
+		
 		// 이미지를 읽기 위한 버퍼
 		BufferedImage sourceImg = ImageIO.read(new File(uploadPath + path, fileName));
 		// 100픽셀 단위의 썸네일 생성

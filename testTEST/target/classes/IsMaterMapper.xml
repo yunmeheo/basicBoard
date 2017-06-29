@@ -46,6 +46,10 @@ where sex = #{searchValue}
 where tech_lev = #{searchValue}
 </when>
 
+<when test="searchItem.equals('all')">
+where kor_name like '%${searchValue}%'
+</when>
+
 <otherwise>
 
 </otherwise>

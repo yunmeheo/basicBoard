@@ -4,28 +4,63 @@
 <html>
 <head>
 <title>list.jsp</title>
-<meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+<meta charset="UTF-8">
 </head>
+
+<% /* String item = request.getParameter("searchItem");
+		
+		if(item == null){
+			item="name";  
+		}
+		
+		System.out.println("고정해야하는 item : "+item); */
+		
+		String item = (String)session.getAttribute("searchItem");
+		String value = (String)session.getAttribute("searchValue");
+
+		
+%>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
+
+   
 
 
 $(function(){
 	
 	
+
+	
+	<%-- $("option[value= <%=item%>]").attr("selected","true"); --%>
+	<%-- $("option[value=<%=item%>]").attr("selected","true");
+	
+	$("form").submit(function(){
+  			return false;
+  	}); --%>
+  	
+  	
+  	
+	
 	//$('.list').find('a').click(function(){
-		//paging
+		//paging 글자 클릭시
 		$('.paging').click(function(){
-		var pageno = $(this).attr('id')
+			
+			//$("input[name=textfield]").val('${param.searchvalue}');
+			
+		var pageno = $(this).attr('id');
+		var searchItem = $('.searchItem').val();
+		var searchValue = $('.searchValue').val();
 		console.log(pageno);
 		$.ajax({
 			url:'selectAll.do',
             method: 'GET', 
             data:{
-            	'pageno': pageno
+            	  'pageno': pageno,
+            	  'pageClick': "pageClick"
 			},
             success:function(responseData){
+            	
             	
             	$("article").empty();
                 $("article").html(responseData.trim()); 
@@ -33,29 +68,69 @@ $(function(){
         });  // end ajax
 		return false; 
 	});
-	
+		
+		/* <input name="textfield" type="text" class="searchValue">  */
 	
 	/* 검색하기 */
-	<% String item = request.getParameter("searchItem");
-	  if(item == null){
-		item="all";  
-	  }
-	  
-	%>
-	
-	    $("option[value=name]").attr("selected","true");
+	    //$("option[value=name]").attr("selected","true");
+	    //fruit_val = $('select.fruit').attr('data-type');
 		/* $("input[name=searchvalue]").val('${param.searchvalue}')
 		$("form").submit(function(){
 			return false;
 		}); */
 		
-		
-		$(".btSearch").click(function(){
+		//검색버튼을 클릭 했을 때
+		 $(".btSearch").click(function(){
+			
 			var searchItem = $('.searchItem').val();
 			var searchValue = $('.searchValue').val();
 			
 			console.log("searchItem : "+searchItem+", searchValue : "+searchValue);
 			$.ajax({ url:"selectAll.do",
+					method:"GET",
+					data:{'searchItem' : searchItem,
+						  'searchValue' : searchValue,
+						  'pageno': 1},
+					success:function(responseData){
+						
+		            
+						
+					var $parentObj = $("article");		
+					if($("article").length == 0){
+						$parentObj ==  $("body");
+					}
+					
+					$parentObj.empty();
+					$parentObj.html(responseData.trim());
+					
+					
+				}
+			});
+			return false;
+		});  // end button
+		
+		
+		/*  <option selected value="name">이름</option>
+	     <option selected value="sex">성별</option>
+	     <option selected value="teclev">기술등급</option> */
+		
+	/*  $(".btSearch").click(function(){
+			
+			var searchItem = $('.searchItem').val();
+			var searchValue = $('.searchValue').val();
+			
+			console.log("searchItem : "+searchItem+", searchValue : "+searchValue);
+			
+			var url = "";
+			if(searchItem=="name"){
+				url="selectByName.do";
+			}else if(searchItem=="sex"){
+				url="selectBySex.do";
+			}else if(searchItem=="teclev"){
+				url="selectByTeclev.do";
+	 		}
+			
+			$.ajax({ url: url,
 					method:"GET",
 					data:{'searchItem' : searchItem,
 						  'searchValue' : searchValue,
@@ -72,8 +147,8 @@ $(function(){
 				}
 			});
 			return false;
-		});  // end button
-	
+		});
+	 */
 		
 		
 		
@@ -87,7 +162,10 @@ $(function(){
 	    	}); 
 	    	if(arrayParam.length>1){
 				$("input:checkbox[name='checkbox']").prop('checked', false);
-				this.checked = true;
+				this.checked = true; 
+				/* alert("2개이상 안되요");
+				this.checked = false;
+				return; */
 		   }
 	    	
 	    	
@@ -221,9 +299,13 @@ $(function(){
           <td height="30" align="right">
           
           
+          아이템 값 : ${sessionScope.searchItem}
+          
+          <%-- <c:set var="value" value="${sessionScope.searchValue}"/>
+           <c:if test="${value eq 'name'}"> selected</c:if> --%>
           
           <select name="select" class="searchItem">
-         	<option selected value="name">이름</option>
+            <option selected value="name"     >이름</option>
               <option selected value="sex">성별</option>
               <option selected value="teclev">기술등급</option>
          	  <option selected value="" name="all">::::전체::::</option>
@@ -231,7 +313,7 @@ $(function(){
             
             <input name="textfield" type="text" class="searchValue"> 
             
-            <a href=""><img src="image/search.gif" width="49" height="18" border="0" align="absmiddle" class="btSearch"></a></td>
+         <a href=""><img src="image/search.gif" width="49" height="18" border="0" align="absmiddle" class="btSearch"></a></td>
         </tr>
         <tr> 
           <td><table width="640" border="0" cellspacing="0" cellpadding="0">
@@ -281,14 +363,14 @@ $(function(){
                       <td width="85" align="center">${ismater.kor_name}</td>
                       <td width="153"align="center">${ismater.jumin_no}</td>
                       
-                      <c:if test="${ismater.sex eq 'w'}">
-                      <td width="91" align="center">여성<%-- ${ismater.sex} --%></td>
+                      <%-- <c:if test="${ismater.sex eq 'w'}">
+                      <td width="91" align="center">여성${ismater.sex}</td>
                       </c:if>
                       <c:if test="${ismater.sex eq 'm'}">
-                      <td width="91" align="center">남성<%-- ${ismater.sex} --%></td>
-                      </c:if>
+                      <td width="91" align="center">남성${ismater.sex}</td>
+                      </c:if> --%>
                       
-                      
+                      <td width="91" align="center">${ismater.sex}</td>
                       <td width="91" align="center">${ismater.work_date}</td>
                       <td width="91" align="center">${ismater.work_flag}</td>
                       <td width="94" align="center">${ismater.tech_lev}</td>

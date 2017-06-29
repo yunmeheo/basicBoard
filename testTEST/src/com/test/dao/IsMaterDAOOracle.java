@@ -47,6 +47,7 @@ public class IsMaterDAOOracle implements IsMaterDAO{
 	}
 
 	public List<IsMater> selectAll(int startPage, int endPage, String searchItem, String searchValue) {
+		System.out.println("IsMaterDAOOracle searchItem : "+searchItem+",searchValue : "+searchValue);
 		Map<String,Object> map = new HashMap<>();
 		map.put("startPage", startPage);
 		map.put("endPage",endPage);
@@ -62,6 +63,7 @@ public class IsMaterDAOOracle implements IsMaterDAO{
 	}
 
 	public void modify(IsMater im) {
+		System.out.println("입력할 객체 : "+im);
 		session.update("IsMaterMapper.modify",im);
 	}
 	

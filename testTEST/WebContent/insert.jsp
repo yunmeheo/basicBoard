@@ -4,6 +4,14 @@
 <%!String newFileName;%>
 <!DOCTYPE HTML>
 
+<%
+    realPath = (String)session.getAttribute("realPath");
+    String newFileName = (String)session.getAttribute("newFileName");
+    System.out.println("jsp newFileName : "+newFileName);
+    System.out.println("jsp realPath : "+realPath);
+    %>
+             
+
 
 <html>
 <head>
@@ -14,10 +22,58 @@
 .fileUpLoad {display: none; border: 1px solid ; position: absolute; top :200px ; left: 200px; background-color: white; padding : 30px}
 .fileDrop { width:600px;  height: 50px;  }
  small {margin-left: 3px; font-weight: bold; color: gray;}
+.uploadedList{width: 100px; height: 100px}
 </style>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
+
+	/* 이미지 보여주기 펑션 */
+	function fileInfo(f){
+		var files = f.files; // files 를 사용하면 파일의 정보를 알 수 있음
+		// file 은 배열이므로 file[0] 으로 접근해야 함
+		
+		if(files[0].size > 1024 * 1024){
+			// 큰 파일을 올리니까 브라우저가 다운되었음 -_-;;
+			alert('1MB 이상의 파일은 안되용! (진지)');
+			return;
+		}
+		else if(files[0].type.indexOf('image') < 0){ // 선택한 파일이 이미지인지 확인
+			alert('이미지 파일만 선택하세요. ㅂㄷㅂㄷ');
+			return;
+		}
+		
+        var file = files[0];
+        console.log(file);
+        var formData = new FormData();
+        
+        // 폼 객체에 파일추가, append("변수명", 값)
+        formData.append("file", file);
+        $.ajax({
+            type: "post",
+            url: "uploadAjax.do",
+            data: formData,
+            dataType: "text",
+            processData: false,
+            contentType: false,
+            success: function(data){
+              //파일명 채워넣기
+              alert(data);
+              
+            //이미지넣기
+            var reader = new FileReader(); // FileReader 객체 사용
+      		reader.onload = function(rst){
+      	    $('.uploadedList').append('<img class = "resultImd"  id='+data+'  style="width : 100px;" src="' + rst.target.result + '">'); // append 메소드를 사용해서 이미지 추가
+      			// 이미지는 base64 문자열로 추가
+      			// 이 방법을 응용하면 선택한 이미지를 미리보기 할 수 있음
+      		}
+      		reader.readAsDataURL(files[0]); // 파일을 읽는다
+              
+            }
+        });return false;
+	}
+	
+
 $(function(){
   
   /* 등록값 정의 */
@@ -28,7 +84,7 @@ $(function(){
   var $jumin_no2= $("input[name=textfield3222]"); //뒤 주민번호
   
   /* 이미지올리기 재료들 */
-  var $image_name= $("input[name=textfield33]");   //파일명
+ // var $image_name= $(".resultImd").attr('id');   //파일명
   var $btSearchFile = $("img[name=btSearchFile]");  // img인데...  파일검색버튼
   
   /* 모든 라디오버튼 */
@@ -59,43 +115,45 @@ $(function(){
   
 
   //버튼으로 파일업로드하기
-  $('#fileForm').submit(function fileSubmit() {
-    event.preventDefault(); // 기본효과를 막음
-    
-    <% realPath = (String)session.getAttribute("realPath");
-      String newFileName = (String)session.getAttribute("newFileName");
-     
-     System.out.println("jsp newFileName : "+newFileName);
-     System.out.println("jsp realPath : "+realPath);
-     
-     %>
-    
-     var imageName= $("input[name=textfield33]"); 
-     var formData = new FormData($("#fileForm")[0]);
-     console.log(formData);
+  /* $('#fileForm').submit(function fileUp(files){
+	event.preventDefault(); // 기본효과를 막음
+	var formData = new FormData();
+	var file = f.files;
+
+     formData.append("file", file);
+     console.log(file);
      $.ajax({
          type : 'post',
-         url : 'fileUpload.do',
+         url : 'uploadAjax.do',
          data : formData,
          processData : false,
          contentType : false,
-         success : function(responseData) {
+         success : function(data){
             
-            //파일명 셋팅하기
-            var id = $(".uploadedList").attr('id');
-            imageName.val(id);
-            console.log("파일명 : "+id);
-
-            // 성공시 이미지출력
-            str = "<div><a href='displayFile.do?fileName="+id+"'>";
-            str += "<img src='displayFile.do?fileName="+id+"'></a>";
-            str += "<span  class='deleteIMG' data-src=uploadImg/"+id+">[삭제]</span></div>";
-            $(".uploadedList").append(str);
+        	//파일명 채워넣기
+             imageName.val(getImageLink(data));
              
-            alert(str);
+             alert(data);
+               var str = "";
+               
+               // 이미지 파일이면 썸네일 이미지 출력
+               if(checkImageType(data)){ 
+                   str = "<div><a href='displayFile.do?fileName="+getImageLink(data)+"'>";
+                   str += "<img src='displayFile.do?fileName="+data+"'></a>";
+               // 일반파일이면 다운로드링크
+               } else { 
+                   str = "<div><a href='displayFile.do?fileName="+data+"'>"+getOriginalName(data)+"</a>";
+               }
+               
+               // 삭제 버튼
+               str += "<span class='deleteIMG' data-src="+data+">[삭제]</span></div>";
+               
+               
+               $(".uploadedList").append(str);
+              
              
-            alert("파일 업로드하였습니다.");
-            $(".fileUpLoad").hide();
+           // alert("파일 업로드하였습니다.");
+            //$(".fileUpLoad").hide();
              
          } ,
          error : function(error) {
@@ -104,13 +162,14 @@ $(function(){
              console.log(error.status);
          } 
      }); return false;
-  }); 
+  });  */
   
   // 파일검색 클릭시 파일업로드창 띄움
-  $btSearchFile.click(function(){
+ /*  $btSearchFile.click(function(){
     console.log("파일검색 클릭됨");
+    
     $(".fileUpLoad").show();
-  });  //end for click
+  });  */ //end for click
   
   
   //최종 등록버튼   
@@ -134,7 +193,7 @@ $(function(){
         'chn_name':$chn_name.val(),
         'jumin_no1':$jumin_no1.val(),
         'jumin_no2':$jumin_no2.val(),
-        'image_name':$image_name.val(),
+        'image_name': $(".resultImd").attr('id'),  //파일명
         'year':$year.val(),
         'month':$month.val(),
         'day':$day.val(),
@@ -233,18 +292,18 @@ $(function(){
                 
             }
         });return false;
-
+    });
       //삭제클릭 이벤트
-      $(".uploadedList").click(function(){
+      /* $(".uploadedList").click(function(){
     	  alert("이미지 삭제클릭");
       
-      });
+      }); */
       
       
       $(".uploadedList").on("click", "span", function(event){
     	  //$(".deleteIMG").on("click", "span", function(event){
-          alert("이미지 삭제")
-          /* var that = $(this); // 여기서 this는 클릭한 span태그
+          //alert("이미지 삭제")
+           var that = $(this); // 여기서 this는 클릭한 span태그
           $.ajax({
               url: "deleteFile.do",
               type: "post",
@@ -258,11 +317,18 @@ $(function(){
                       that.parent("div").remove();
                   }
               }
-          }); */
+          }); 
       });
       
         
-        
+      $('.testBt').click(function(){
+  		
+  		
+  		console.log($bir.val());
+  		console.log($sex.val());
+  		console.log($marital_status.val());
+  		
+  	});   
         
         
         
@@ -304,11 +370,21 @@ $(function(){
      
      
         
-    });
+        
+
   
   
   
 });  // end for all function
+
+
+	
+
+
+
+
+
+
 </script>
 
 <c:set var="newFileName"  value="${sessionScope.newFileName }"/>
@@ -430,13 +506,26 @@ $(function(){
                             <td width="102" align="right"><strong>사진파일명 :&nbsp;</strong></td>
                             <td width="268">
                             
-                            <input name="textfield33" type="text" size="40">
+
+
+							<form id="fileForm" method="post" enctype="multipart/form-data"  >
+							    <input type="file" id="fileUp" name="fileUp" onchange="fileInfo(this)"/>&nbsp;&nbsp;
+							   <!--  <input type="submit" value="미리보기" > -->
+							</form>
+
+
+							 <!-- <input name="textfield33" type="text" size="40"> -->
                             
                             </td>
                             <td width="146">
-                              <font color="#FF0000">
+                              <!-- <font color="#FF0000">
                                <img src="image/bt_search.gif" width="49" height="18"  name="btSearchFile">
-                              </font>
+                               
+                               
+                               
+                               
+                               
+                              </font> -->
                             </td>
                           </tr>
                         </table>
@@ -620,7 +709,7 @@ $(function(){
 
 <!-- 파일업뎃 div -->
 
-<div class = "fileUpLoad">
+<!-- <div class = "fileUpLoad">
 
 <form id="fileForm"  method="post" enctype="multipart/form-data">
     <input type="file" id="fileUp" name="fileUp"/><br/><br/>
@@ -628,7 +717,7 @@ $(function(){
 </form>
 
 
-</div>
+</div> -->
 
 
 
