@@ -22,6 +22,8 @@
 
 $(function(){
 
+	
+	/* 등록값 정의 */
 	var $kor_name= $("input[name=textfield4]");  //한글이름
 	var $eng_name= $("input[name=textfield22]");   //영문이름
 	var $chn_name  = $("input[name=textfield34]");  //*** 한문이름
