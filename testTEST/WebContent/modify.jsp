@@ -51,7 +51,7 @@ function fileInfo(f){
         contentType: false,
         success: function(data){
           //파일명 채워넣기
-          alert(data);
+           console.log("저장되는 파일 명 :"+data);
           
           $('.viewMyImg').hide();
           $('.uploadedList').show();
@@ -59,7 +59,7 @@ function fileInfo(f){
         //이미지넣기
         var reader = new FileReader(); // FileReader 객체 사용
   		reader.onload = function(rst){
-  	    $('.uploadedList').append('<img class = "resultImd"  id='+data+'  style="width : 130px;" src="' + rst.target.result + '">'); // append 메소드를 사용해서 이미지 추가
+  	    $('.uploadedList').append('<img class = "resultImd"  id='+data+'  style="width : 100px;" src="' + rst.target.result + '">'); // append 메소드를 사용해서 이미지 추가
   			// 이미지는 base64 문자열로 추가
   			// 이 방법을 응용하면 선택한 이미지를 미리보기 할 수 있음
   		}
@@ -191,7 +191,7 @@ $(function(){
 	              //파일명 채워넣기
 	              imageName.val(getImageLink(data));
 	              
-	              alert(data);
+	              console.log("저장되는 파일 명 :"+data);
 	                var str = "";
 	                
 	                // 이미지 파일이면 썸네일 이미지 출력

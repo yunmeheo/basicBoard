@@ -39,7 +39,7 @@
 			return;
 		}
 		else if(files[0].type.indexOf('image') < 0){ // 선택한 파일이 이미지인지 확인
-			alert('이미지 파일만 선택하세요. ㅂㄷㅂㄷ');
+			alert('이미지 파일 외 미리보기 제공 불가');
 			return;
 		}
 		
@@ -58,12 +58,12 @@
             contentType: false,
             success: function(data){
               //파일명 채워넣기
-              alert(data);
+              console.log("저장되는 파일 명 :"+data);
               
             //이미지넣기
             var reader = new FileReader(); // FileReader 객체 사용
       		reader.onload = function(rst){
-      	    $('.uploadedList').append('<img class = "resultImd"  id='+data+'  style="width : 100px;" src="' + rst.target.result + '">'); // append 메소드를 사용해서 이미지 추가
+      	    $('.uploadedList').append('<img class = "resultImd"  id='+data+'  style="width : 100px; height : auto;" src="' + rst.target.result + '">'); // append 메소드를 사용해서 이미지 추가
       			// 이미지는 base64 문자열로 추가
       			// 이 방법을 응용하면 선택한 이미지를 미리보기 할 수 있음
       		}

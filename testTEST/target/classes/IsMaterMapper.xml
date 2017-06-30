@@ -42,12 +42,18 @@ where kor_name like '%${searchValue}%'
 
 <when test="searchItem.equals('sex')">
 
-	<if test="searchValue.equals('여성')">
+	<choose>
+	<when test="searchValue.equals('여성')">
 	 where sex =  'w'
-	</if>
-	<if test="searchValue.equals('남성')">
+	</when>
+	<when test="searchValue.equals('남성')">
 	 where sex =  'm'
-	</if>
+	</when>
+	<otherwise>
+	 where sex =  #{searchValue}
+	</otherwise>
+	</choose>
+	
 </when>
 
 <when test="searchItem.equals('teclev')">
