@@ -156,20 +156,19 @@ public class IsMaterController {
 	    }*/
 
 
-	//드레그로 파일 업로드 1
+	//객체로 파일 업로드 1
 	@RequestMapping(value="uploadAjax.do", method=RequestMethod.GET)
 	public void uploadAjax(){
 		System.out.println("IsMaterController , uploadAjax GET");
 		// uploadAjax.jsp로 포워딩
 	}
 
-	//드레그로 파일 업로드 2
+	//객체로 파일 업로드 2
 	@ResponseBody
 	@RequestMapping(value="uploadAjax.do", method=RequestMethod.POST, produces="text/plain;charset=utf-8")
 	public ResponseEntity<String> uploadAjax(MultipartFile file) throws Exception {
 		System.out.println("IsMaterController , uploadAjax POST");
 		
-		System.out.println("MultipartFile file"+file);
 		return new ResponseEntity<String>(uploadFile(uploadPath, file.getOriginalFilename(), file.getBytes()), HttpStatus.OK);
 	}
 
@@ -271,7 +270,7 @@ public class IsMaterController {
 
 		//총사이즈 한번만 구하기
 		int cnt=0;
-		if(cnt == 0){
+		if(cnt == 0 && pageClick == null){
 			cnt ++;
 			//검색할때마다 총리스트 다시 구해줘야함 조건.
 			listSize = dao.selectAll(searchItem,searchValue).size();

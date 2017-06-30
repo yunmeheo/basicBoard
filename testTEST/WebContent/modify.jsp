@@ -15,13 +15,8 @@
 .fileUpLoad {display: none; border: 1px solid ; position: absolute; top :200px ; left: 200px; background-color: white; padding : 30px}
 .fileDrop { width:600px;  height: 50px;  }
  small {margin-left: 3px; font-weight: bold; color: gray;}
- .uploadedList{width: 100px; height: 100px}
+ .uploadedList{width: 100px; height: 100px; display: none;}
 </style>
-
-
-
-
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
@@ -58,10 +53,13 @@ function fileInfo(f){
           //파일명 채워넣기
           alert(data);
           
+          $('.viewMyImg').hide();
+          $('.uploadedList').show();
+          
         //이미지넣기
         var reader = new FileReader(); // FileReader 객체 사용
   		reader.onload = function(rst){
-  	    $('.uploadedList').append('<img class = "resultImd"  id='+data+'  style="width : 100px;" src="' + rst.target.result + '">'); // append 메소드를 사용해서 이미지 추가
+  	    $('.uploadedList').append('<img class = "resultImd"  id='+data+'  style="width : 130px;" src="' + rst.target.result + '">'); // append 메소드를 사용해서 이미지 추가
   			// 이미지는 base64 문자열로 추가
   			// 이 방법을 응용하면 선택한 이미지를 미리보기 할 수 있음
   		}
@@ -233,6 +231,14 @@ $(function(){
 	    console.log($sex.val());
 	    console.log($marital_status.val());
 	    
+	    
+	    var nowImage_name=$(".resultImd").attr('id');;
+	    if(nowImage_name == null){
+	    	image_name = '<%=im.getImage_name()%>';
+	    }else if(nowImage_name != null){
+	    	image_name = $(".resultImd").attr('id');
+	    }
+	    
 
 		$.ajax({
 			url : "modify.do",
@@ -243,7 +249,7 @@ $(function(){
 				'chn_name':$chn_name.val(),
 				'jumin_no1':$jumin_no1.val(),
 				'jumin_no2':$jumin_no2.val(),
-				'image_name': $(".resultImd").attr('id'),  //파일명
+				'image_name': image_name,  //파일명
 				'year':$year.val(),
 				'month':$month.val(),
 				'day':$day.val(),
@@ -288,6 +294,20 @@ $(function(){
       		});
       	});
 	
+	
+	
+	//취소버튼액션 - 리스트화면으로 보내기
+    $('#cancel').click(function(){
+    	$.ajax({
+            url : "selectAll.do",
+            method: 'GET', 
+            data:{'pageno':1},
+            success : function(responseData){
+              $("article").empty();
+              $("article").html(responseData.trim()); 
+            }
+          }); return false;
+    });
 	
 
 
@@ -354,16 +374,22 @@ $(function(){
 	                                  <tr>
 	                                    <td height="110" bgcolor="#FFFFFF">&nbsp;
                                      
-                                    <%--  <!-- 새로 변경될 이미지를 보여주는 div -->
+                                     
+                                     
+                                    <!-- 새로 변경될 이미지를 보여주는 div -->
                                      <div class="uploadedList" id="${newFileName}"></div>
-                                      --%>
+                                      
+                                      
                                      <!-- 등록해둔 이미지를 보여주기 위한 div -->
                                       <div class="viewMyImg" >
-                                         <%-- <a href='displayFile.do?fileName=${ismater.image_name}'> --%>
+                                         <a href='displayFile.do?fileName=${ismater.image_name}'>
                                          <img   style='max-width: 100%; height: auto;'   src='displayFile.do?fileName=${ismater.image_name}'>
-                                         <!-- </a> -->
+                                         </a>
                                       </div>
-                                      
+                                     
+                                     
+                                     
+                                     
                                       
                                      </td>
 	                                </tr>

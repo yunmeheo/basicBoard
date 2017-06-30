@@ -4,6 +4,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="IsMaterMapper">
 
+
+<!-- 입력 -->
 <insert id="insert">
 INSERT INTO ISMATER VALUES(
 	ismater_seq.NEXTVAL,
@@ -28,7 +30,7 @@ INSERT INTO ISMATER VALUES(
 
 </insert>
 
-
+<!-- 검색햇을 때 실제 리스트 -->
 <select id="selectAll"  resultType="IsMater" parameterType="java.util.Map">
 
 select r.* from (SELECT rownum rnum,  im.* FROM ( SELECT no, sex,kor_name, jumin_no,work_date,work_flag,tech_lev FROM ISMATER 
@@ -39,7 +41,13 @@ where kor_name like '%${searchValue}%'
 </when>
 
 <when test="searchItem.equals('sex')">
-where sex = #{searchValue}
+
+	<if test="searchValue.equals('여성')">
+	 where sex =  'w'
+	</if>
+	<if test="searchValue.equals('남성')">
+	 where sex =  'm'
+	</if>
 </when>
 
 <when test="searchItem.equals('teclev')">
@@ -47,7 +55,19 @@ where tech_lev = #{searchValue}
 </when>
 
 <when test="searchItem.equals('all')">
-where kor_name like '%${searchValue}%'
+
+
+	where kor_name like '%${searchValue}%' or
+
+	<if test="searchValue.equals('여성')">
+	 sex = 'w' or
+	</if>
+	<if test="searchValue.equals('남성')">
+	 sex = 'm'  or
+	</if>  
+	
+	tech_lev = #{searchValue}
+	
 </when>
 
 <otherwise>
@@ -63,7 +83,7 @@ where r.rnum BETWEEN #{startPage} AND #{endPage}
 
 
 
-
+<!-- 리스트 사이즈 -->
 <select id="selectAllList"  resultType="IsMater"  parameterType="java.util.Map">
 select * from ISMATER
 
@@ -73,12 +93,39 @@ where kor_name like '%${searchValue}%'
 </when>
 
 <when test="searchItem.equals('sex')">
-where sex = #{searchValue}
+
+
+	<if test="searchValue.equals('여성')">
+	 where sex = 'w'
+	</if>
+	<if test="searchValue.equals('남성')">
+	 where sex = 'm'
+	</if>
+
 </when>
 
 <when test="searchItem.equals('teclev')">
 where tech_lev = #{searchValue}
 </when>
+
+<when test="searchItem.equals('all')">
+
+
+	where kor_name like '%${searchValue}%' or
+	
+	<if test="searchValue.equals('여성')">
+	 sex = 'w' or
+	</if>
+	<if test="searchValue.equals('남성')">
+	 sex = 'm'  or
+	</if>  
+	
+	tech_lev = #{searchValue}
+
+
+
+</when>
+
 
 <otherwise>
 
@@ -90,9 +137,7 @@ where tech_lev = #{searchValue}
 
 
 <delete id="delete" parameterType="String">
-
 delete from ismater where no = #{checkedId}
-
 </delete>
 
 <select id="selectByNo" parameterType="String"  resultType="IsMater">

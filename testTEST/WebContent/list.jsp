@@ -150,80 +150,106 @@ $(function(){
 		});
 	 */
 		
+	//버튼 기본효과 제거
+	var arrayParam = null;  
+	 $('.modify').click (function(){
+		 event.preventDefault();
+		 if(arrayParam == null){
+			 
+		 }
+	 });
+	 $('.delete').click (function(){
+		   	event.preventDefault();
+	 });
+	 
+	 
+	 
+	 
+	$("input:checkbox[name='checkbox']").click(function(){
 		
+		//중복체크박지
+		arrayParam = new Array(); 
+	   	$("input:checkbox[name='checkbox']:checked").each(function(){
+	       	arrayParam.push($(this).val());
+	   	}); 
+	   	if(arrayParam.length>1){
+			$("input:checkbox[name='checkbox']").prop('checked', false);
+			this.checked = true; 
+			/* alert("2개이상 안되요");
+			this.checked = false;
+			return; */
+	   }
+	   	
+	   	
+	   	
+	  	//삭제액션
+	  	var checkedId = $(this).attr("value");
+	     console.log(checkedId);
+	     
+	     $('.delete').click (function(){
+		console.log("삭제클릭");
 		
-		var arrayParam = null;  
-		$("input:checkbox[name='checkbox']").click(function(){
+		 //개별체크액션 = 각 체크된 아이디값 가져오기
+		 $.ajax({
+			 
+			url : 'delete.do',
+			data : {'checkedId' : checkedId},
+			method : 'GET',
+			success : function(responseData){
+				
+			var result = responseData.trim();
+			if(result=="1"){
+				alert("성공");
+				
+				$.ajax({
+		      		   url : "selectAll.do",
+		      		   method: 'GET', 
+		      		   data:{'pageno':1},
+		      		   success : function(responseData){
+		      			   $("article").empty();
+		      			   $("article").html(responseData.trim()); 
+		      		   }
+		      	   }); return false;
+				
+				
+			}else{
+				alert("실패");
 			
-			//중복체크박지
-			arrayParam = new Array(); 
-	    	$("input:checkbox[name='checkbox']:checked").each(function(){
-	        	arrayParam.push($(this).val());
-	    	}); 
-	    	if(arrayParam.length>1){
-				$("input:checkbox[name='checkbox']").prop('checked', false);
-				this.checked = true; 
-				/* alert("2개이상 안되요");
-				this.checked = false;
-				return; */
-		   }
-	    	
-	    	
-	    	//삭제액션
-	    	var checkedId = $(this).attr("value");
-		      console.log(checkedId);
+			}
+			
+			}
+		 }); return false;
+			
+	 });
+	      
+	      
+	      
+	     //수정
+	     $('.modify').click (function(){
+			console.log("수정클릭");
+	
+			
+			$.ajax({url: 'selectByNo.do',
+		           method: 'GET', 
+		           data : {'checkedId' : checkedId},
+		           success:function(responseData){
+		        	   console.log("1차성공 ");
+		             $("article").empty();
+		             $("article").html(responseData.trim()); 
+		         }
+		       });return false;
+	      });
+	     
+	     
+	     
+	  }); // end for checkbox
+	 
+	 
+	 
+	 
+});  //end for all function
 		      
-		      $('.delete').click (function(){
-				console.log("삭제클릭");
-				 //개별체크액션 = 각 체크된 아이디값 가져오기
-				 $.ajax({
-					 
-					url : 'delete.do',
-					data : {'checkedId' : checkedId},
-					method : 'GET',
-					success : function(responseData){
-						
-					var result = responseData.trim();
-					if(result=="1"){
-						alert("성공");
-						
-						$.ajax({
-				      		   url : "selectAll.do",
-				      		   method: 'GET', 
-				      		   data:{'pageno':1},
-				      		   success : function(responseData){
-				      			   $("article").empty();
-				      			   $("article").html(responseData.trim()); 
-				      		   }
-				      	   }); return false;
-						
-						
-					}else{
-						alert("실패");
-					
-					}
-					
-					}
-				 }); return false;
-					
-			 });
-		      
-		      
-		      
-		      //수정
-		      $('.modify').click (function(){
-					console.log("수정클릭");
-					
-					$.ajax({url: 'selectByNo.do',
-				           method: 'GET', 
-				           data : {'checkedId' : checkedId},
-				           success:function(responseData){
-				        	   console.log("1차성공 ");
-				             $("article").empty();
-				             $("article").html(responseData.trim()); 
-				         }
-				       });return false;
-				       
+					/* }   */
 					 //개별체크액션 = 각 체크된 아이디값 가져오기
 					/*  $.ajax({
 						 
@@ -255,8 +281,7 @@ $(function(){
 						}
 					 }); return false; */
 						
-				 });
-		      
+				
 		      
 		      
 		      
@@ -264,17 +289,7 @@ $(function(){
 		      
 	    	
 	    	
-	    });
-			
-		
-		
-		
-	
-		
-	
-	
-	
-});
+
 
 
 
@@ -342,7 +357,7 @@ $(function(){
 				
 				<tr> 
                       <td width="35" height="20" align="center"></td>
-                      <td width="85" align="center">한국이름</td>
+                      <td width="85" align="center">이름</td>
                       <td width="153" align="center">주민번호</td>
                       <td width="91" align="center">성별</td>
                       <td width="91" align="center">날짜</td>
@@ -363,14 +378,14 @@ $(function(){
                       <td width="85" align="center">${ismater.kor_name}</td>
                       <td width="153"align="center">${ismater.jumin_no}</td>
                       
-                      <%-- <c:if test="${ismater.sex eq 'w'}">
-                      <td width="91" align="center">여성${ismater.sex}</td>
+                      <c:if test="${ismater.sex eq 'w'}">
+                      <td width="91" align="center">여성  <%-- ${ismater.sex}  --%> </td>
                       </c:if>
                       <c:if test="${ismater.sex eq 'm'}">
-                      <td width="91" align="center">남성${ismater.sex}</td>
-                      </c:if> --%>
+                      <td width="91" align="center">남성  <%-- ${ismater.sex} --%>  </td>
+                      </c:if> 
                       
-                      <td width="91" align="center">${ismater.sex}</td>
+                     <%--  <td width="91" align="center">${ismater.sex}</td> --%>
                       <td width="91" align="center">${ismater.work_date}</td>
                       <td width="91" align="center">${ismater.work_flag}</td>
                       <td width="94" align="center">${ismater.tech_lev}</td>
@@ -405,11 +420,17 @@ $(function(){
 							pageno = total_page;
 						}
 						int group_no = pageno/group_per_page_cnt+( pageno%5 >0 ? 1:0);
-						int page_eno = group_no*group_per_page_cnt;		
+						int page_eno = group_no*group_per_page_cnt;	
+						
 						int page_sno = page_eno-(group_per_page_cnt-1);	
 						if(page_eno>total_page){
 							page_eno=total_page;
 						}
+						
+						if(page_sno<0){
+							page_sno = 1;
+						}
+						
 						int prev_pageno = pageno-1;
 						int next_pageno = pageno+1;
 						if(prev_pageno<1){
@@ -417,14 +438,38 @@ $(function(){
 						}
 						if(next_pageno>total_page){
 							next_pageno=total_page/group_per_page_cnt*group_per_page_cnt+1;
+							next_pageno=total_page;
 							System.out.println(" 최대페이지보다 큰 next_pageno : " +next_pageno);
 						}
 					%>
-
+					
+					
+					<%-- 현재 페이지   (pageno)   : <%=pageno%><br />
+					전체 데이터 수   (total_record) : <%=total_record %><br />
+					한페이지 당 레코드 수   (page_per_record_cnt) : <%=page_per_record_cnt %><br />
+					한페이지 당 보여줄 페지 번호 수   (group_per_page_cnt) : <%=group_per_page_cnt %><br />
+					
+					<hr />
+					레코드 시작 번호  (record_start_no) : <%=record_start_no%><br />
+					레코드 끝 번호    (record_end_no) : <%=record_end_no %><br />
+					전체페이지 수     (total_page)  : <%=total_page %><br />
+					<hr />
+					현재 그룹번호 [1] (group_no):  <%=group_no %><br />
+					현재 그룹 시작 번호(page_sno): <%= page_sno%><br />
+					현재 그룹 끝 번호  (page_eno): <%= page_eno%><br />
+					이전 페이지 번호   (prev_pageno) <%=prev_pageno%><br />
+					다음 페이지 번호   (next_pageno) <%=next_pageno%><br />
+					<hr /> 
+					 --%>
+					
+					
+				<c:set var ="listSize" value="${requestScope.listSize}"/>
+				<c:if test="${listSize > 5}">
 				<a href="" id="1" class="paging"><img src="image/prev.gif" width="22" height="15" border="0" align="absmiddle"></a>&nbsp;
                 <a href="" id="<%=prev_pageno%>" class="paging"><img src="image/pre.gif" width="42" height="15" border="0" align="absmiddle"></a>&nbsp; 
-                                            
-					
+				</c:if>
+
+				<c:if test="${listSize > 5}">	
 					<%for(int i =page_sno;i<=page_eno;i++){%>
 						<a href="" class="paging" id="<%=i%>">
 							<%if(pageno == i){ %>
@@ -438,11 +483,18 @@ $(function(){
 							|
 						<%} %>
 					<%} %>
+				</c:if>	 
+				
+				<c:if test="${listSize <6 }">	
+				[1]
+				</c:if>
 					 
-                        
-                  <a href="" id="<%=next_pageno%>" class="paging"><img src="image/next.gif" width="42" height="15" border="0" align="absmiddle"></a>&nbsp
+				<c:if test="${listSize > 5}">					
+				  <a href="" id="<%=next_pageno%>" class="paging"><img src="image/next.gif" width="42" height="15" border="0" align="absmiddle"></a>&nbsp
 				  <a href="" id="<%=total_page%>" class="paging"><img src="image/next_.gif" width="22" height="15" border="0" align="absmiddle"></a>
-					
+				</c:if>
+                        
+                  
                     
                     </td>
                     

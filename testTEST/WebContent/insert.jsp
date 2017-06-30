@@ -1,15 +1,15 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
-<%!String realPath;%>
-<%!String newFileName;%>
+<%-- <%!String realPath;%>
+<%!String newFileName;%> --%>
 <!DOCTYPE HTML>
 
-<%
+<%-- <%
     realPath = (String)session.getAttribute("realPath");
     String newFileName = (String)session.getAttribute("newFileName");
     System.out.println("jsp newFileName : "+newFileName);
     System.out.println("jsp realPath : "+realPath);
-    %>
+    %> --%>
              
 
 
@@ -68,7 +68,6 @@
       			// 이 방법을 응용하면 선택한 이미지를 미리보기 할 수 있음
       		}
       		reader.readAsDataURL(files[0]); // 파일을 읽는다
-              
             }
         });return false;
 	}
@@ -370,7 +369,18 @@ $(function(){
      
      
         
-        
+        //취소버튼액션 - 리스트화면으로 보내기
+        $('#cancel').click(function(){
+        	$.ajax({
+                url : "selectAll.do",
+                method: 'GET', 
+                data:{'pageno':1},
+                success : function(responseData){
+                  $("article").empty();
+                  $("article").html(responseData.trim()); 
+                }
+              }); return false;
+        });
 
   
   

@@ -46,6 +46,7 @@ public class IsMaterDAOOracle implements IsMaterDAO{
 		return session.selectOne("IsMaterMapper.selectByNo",checkedId);
 	}
 
+	//실제 리스트를 뽑기위한 조건 메서드
 	public List<IsMater> selectAll(int startPage, int endPage, String searchItem, String searchValue) {
 		System.out.println("IsMaterDAOOracle searchItem : "+searchItem+",searchValue : "+searchValue);
 		Map<String,Object> map = new HashMap<>();
